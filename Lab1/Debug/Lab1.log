@@ -1,0 +1,14 @@
+﻿  Source.cpp
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(493): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(551): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(551): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(552): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(552): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(897): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(897): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(898): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(898): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(966): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(986): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(987): warning C4129: 'A': unrecognized character escape sequence
+  Lab1.vcxproj -> C:\Users\kosty\source\repos\Lab1\Debug\Lab1.exe

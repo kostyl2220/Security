@@ -1,0 +1,26 @@
+﻿  Source.cpp
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(199): warning C4244: 'argument': conversion from '__int64' to 'const char', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(207): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(207): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(504): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(557): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(557): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(558): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(558): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(624): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(624): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(624): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(624): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(975): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(967): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(967): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(967): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(967): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(995): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(996): warning C4129: 'A': unrecognized character escape sequence
+  Generating code
+  7 of 1776 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Lab1.vcxproj -> C:\Users\kosty\source\repos\Lab1\x64\Release\Lab1.exe
