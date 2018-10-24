@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <future>
 #include <chrono>
+#include <iostream>
+#include <sstream>
 
 ////////////////////////////////////////////////// FIRST CIPHER
 bool IsMeanableLine(std::string const& line)
@@ -224,15 +226,16 @@ size_t const keySize = 26;
 size_t const maxWordSize = 32;
 size_t const MAX_POPULATION_SIZE = 1000;
 size_t const MIN_POPULATION_SIZE = 700;
-size_t const MAX_N_GRAM_SIZE = 5;
+size_t const MAX_N_GRAM_SIZE = 3;
 size_t const COUNT_OF_CHILDREN = MAX_POPULATION_SIZE - MIN_POPULATION_SIZE;
 float const EPSILON = 0.0001f;
-float const MIN_WORD_SEARCH_SIZE = 0.8f;
-float const WORD_LETTER_COEF = 0.02f;
+float const MIN_WORD_SEARCH_SIZE = 2.0f;
+float const WORD_LETTER_COEF = 0.03f;
 size_t const COUNT_OF_WORDS_IN_VOCABLUARY = 1000;
 size_t const COUNT_OF_PARENT_MUTATIONS = 6;
 size_t const START_WORD_LEN = 2;
-size_t const MAX_COUNT_OF_REPEATS = 300;
+size_t const MAX_COUNT_OF_REPEATS = 100;
+size_t const COUNT_OF_MUTATIONS = 1;
 
 struct Parent
 {
@@ -316,62 +319,53 @@ bool IsMeanableString(std::string const& line)
 
 std::vector<std::unordered_map<std::string, double>> GetNGrams(size_t const maxAnagram)
 {
-	std::vector<WordFreq> voc = GetVocabulary2();
 	std::vector<std::unordered_map<std::string, double>> nGrams;
-	std::vector<std::unordered_map<std::string, size_t>> nGramCounts;
 	nGrams.resize(maxAnagram - 1);
-	nGramCounts.resize(maxAnagram - 1);
-	for (WordFreq& wordFreq : voc)
+	for (size_t i = 2; i <= maxAnagram; ++i)
 	{
-		for (size_t i = 2; i <= maxAnagram; ++i)
+		long long sum = 0;
+		std::ifstream file("ngrams" + std::to_string(i) + ".txt", std::ifstream::binary);
+
+		char str[maxWordSize];
+
+		std::string line;
+
+		while (std::getline(file, line)) 
 		{
-			if (wordFreq.word.size() < i)
-			{
-				continue;
-			}
+			std::istringstream row(line);
+			char str[maxWordSize];
+			row.read(str, i);
 
-			size_t const endIndex = wordFreq.word.size() - i + 1;
-			for (size_t j = 0; j < endIndex; ++j)
-			{
-				std::string nGram = wordFreq.word.substr(j, i);
-				if (!IsMeanableString(nGram))
-				{
-					continue;
-				}
+			std::string nGram = str;
+			nGram.resize(i);
+			std::transform(nGram.begin(), nGram.end(), nGram.begin(), ::tolower);
 
-				if (nGrams[i - 2].find(nGram) == nGrams[i - 2].end())
-				{
-					nGrams[i - 2][nGram] = 0;
-				}
-				if (nGramCounts[i - 2].find(nGram) == nGramCounts[i - 2].end())
-				{
-					nGramCounts[i - 2][nGram] = 0;
-				}
-				nGrams[i - 2][nGram] += wordFreq.occurencies;
-				nGramCounts[i - 2][nGram] += 1;
-			}
+			row.read(str, maxWordSize);
+			long long const occurencies = atoll(str + 1);
+			sum += occurencies;
+			nGrams[i - 2][nGram] = (double)occurencies;
+
 		}
-	}
 
-	for (size_t i = 0; i < maxAnagram - 1; ++i)
-	{
-		for (auto& pair : nGrams[i])
+		for (auto& wordFreq : nGrams[i - 2])
 		{
-			pair.second /= nGramCounts[i][pair.first];
+			wordFreq.second /= sum;
 		}
-	}
 
+		file.close();
+	}
 	return nGrams;
 }
 
 std::string Enscrypt(std::string const& cipher, size_t const key[keySize])
 {
 	std::string result;
-	result.reserve(cipher.size());
-	for (auto& letter : cipher)
+	result.resize(cipher.size());
+	for (size_t i = 0; i < cipher.size(); ++i)
 	{
+		char const letter = cipher[i];
 		size_t const letterId = (size_t)letter - (size_t)'a';
-		result.push_back((char)('a' + key[letterId]));
+		result[i] = ((char)('a' + key[letterId]));
 	}
 	return result;
 }
@@ -379,32 +373,23 @@ std::string Enscrypt(std::string const& cipher, size_t const key[keySize])
 Parent GetSingleCrossover(Parent const& parent1, Parent const& parent2)
 {
 	Parent child;
-	bool filledKeys[keySize];
-	std::fill(filledKeys, filledKeys + keySize, false);
+	size_t filledKeys[keySize];
+	std::fill(filledKeys, filledKeys + keySize, -1);
 	size_t countOfMismatch = 0;
 	for (size_t i = 0; i < keySize; ++i)
 	{
 		size_t parentId = rand() % 2;
 		Parent const& currentParent = (parentId % 2 == 0 ? parent1 : parent2);
-		if (!filledKeys[currentParent.key[i]])
+
+		size_t const existingVal = filledKeys[currentParent.key[i]];
+		if (existingVal != -1)
 		{
-			child.key[i] = currentParent.key[i];
-			filledKeys[currentParent.key[i]] = true;
+			child.key[existingVal] = -1;
+			++countOfMismatch;
 		}
-		else
-		{
-			Parent const& otherParent = (parentId % 2 == 0 ? parent2 : parent1);
-			if (!filledKeys[otherParent.key[i]])
-			{
-				child.key[i] = otherParent.key[i];
-				filledKeys[otherParent.key[i]] = true;
-			}
-			else
-			{
-				++countOfMismatch;
-				child.key[i] = -1;
-			}
-		}
+		
+		filledKeys[currentParent.key[i]] = i;
+		child.key[i] = currentParent.key[i];
 	}
 	if (countOfMismatch)
 	{
@@ -412,7 +397,7 @@ Parent GetSingleCrossover(Parent const& parent1, Parent const& parent2)
 		mismathes.reserve(countOfMismatch);
 		for (size_t i = 0; i < keySize; ++i)
 		{
-			if (!filledKeys[i])
+			if (filledKeys[i] == -1)
 			{
 				mismathes.push_back(i);
 			}
@@ -562,16 +547,20 @@ size_t GetParentIndex()
 	return rangeToGet == 0 ? 0 : indexToGet;
 }
 
+size_t const HALF_CHILDREN = COUNT_OF_CHILDREN / 3;
+size_t const OTHER_HALF_CHILDREN = COUNT_OF_CHILDREN - HALF_CHILDREN;
+
 void Crossover(std::vector<Parent>& population)
 {
 	for (size_t i = 0; i < COUNT_OF_CHILDREN; ++i)
 	{
-		Parent child = population[GetParentIndex()];
-		for (size_t j = 0; j < rand() % COUNT_OF_PARENT_MUTATIONS; ++j)
+		size_t const keyValue1 = GetParentIndex();
+		size_t keyValue2 = GetParentIndex();
+		while (keyValue1 == keyValue2)
 		{
-			MutateOne(child);
+			keyValue2 = GetParentIndex();
 		}
-		population.push_back(child);
+		population.push_back(GetSingleCrossover(population[keyValue1], population[keyValue2]));
 	}
 }
 
@@ -592,7 +581,6 @@ void PrintResult(std::string const& cipher, std::vector<Parent>& population)
 {
 	printf("Third: %s", Enscrypt(cipher, population.front().key).c_str());
 	printf("Fitness value: %f", population.front().fitnesValue);
-	getchar();
 }
 
 void ThirdCipher(std::string const& cipher)
@@ -745,7 +733,8 @@ void Additional()
 
 /////////////////////////// Fourth Cipher
 
-size_t const MAX_COUNT_OF_REPEATS_WIDE = 5000;
+size_t const MAX_COUNT_OF_REPEATS_WIDE = 1000;
+size_t const SIMPLIFIED_COUNT_OF_REPEATS = 500;
 
 struct WideParent
 {
@@ -753,42 +742,48 @@ struct WideParent
 	std::vector<std::vector<size_t>> keys;
 
 	WideParent(std::vector<std::vector<size_t>> const key) : keys(key), fitnesValue(0) {}
+	WideParent(size_t const size)
+	{
+		keys.resize(size);
+		for (size_t i = 0; i < size; ++i)
+		{
+			keys[i].resize(keySize);
+		}
+	}
+
 
 	WideParent() {};
 };
 
-WideParent GetSingleCrossover(WideParent const& parent1, WideParent const& parent2)
+WideParent GetSingleCrossover(WideParent const& parent1, WideParent const& parent2, size_t const countOfRepeats)
 {
-	WideParent child;
+	WideParent child(parent1.keys.size());
+
+	size_t const oneJ = countOfRepeats > SIMPLIFIED_COUNT_OF_REPEATS ? rand() % parent1.keys.size() : -1;
 	for (size_t j = 0; j < parent1.keys.size(); ++j)
 	{
-		bool filledKeys[keySize];
-		std::fill(filledKeys, filledKeys + keySize, false);
-		size_t countOfMismatch = 0;
+		if (oneJ != -1 && oneJ != j)
+		{
+			continue;
+		}
 
+		size_t filledKeys[keySize];
+		std::fill(filledKeys, filledKeys + keySize, -1);
+		size_t countOfMismatch = 0;
 		for (size_t i = 0; i < keySize; ++i)
 		{
 			size_t parentId = rand() % 2;
 			WideParent const& currentParent = (parentId % 2 == 0 ? parent1 : parent2);
-			if (!filledKeys[currentParent.keys[j][i]])
+
+			size_t const existingVal = filledKeys[currentParent.keys[j][i]];
+			if (existingVal != -1)
 			{
-				child.keys[j][i] = currentParent.keys[j][i];
-				filledKeys[currentParent.keys[j][i]] = true;
+				child.keys[j][existingVal] = -1;
+				++countOfMismatch;
 			}
-			else
-			{
-				WideParent const& otherParent = (parentId % 2 == 0 ? parent2 : parent1);
-				if (!filledKeys[otherParent.keys[j][i]])
-				{
-					child.keys[j][i] = otherParent.keys[j][i];
-					filledKeys[otherParent.keys[j][i]] = true;
-				}
-				else
-				{
-					++countOfMismatch;
-					child.keys[j][i] = -1;
-				}
-			}
+
+			filledKeys[currentParent.keys[j][i]] = i;
+			child.keys[j][i] = currentParent.keys[j][i];
 		}
 		if (countOfMismatch)
 		{
@@ -796,7 +791,7 @@ WideParent GetSingleCrossover(WideParent const& parent1, WideParent const& paren
 			mismathes.reserve(countOfMismatch);
 			for (size_t i = 0; i < keySize; ++i)
 			{
-				if (!filledKeys[i])
+				if (filledKeys[i] == -1)
 				{
 					mismathes.push_back(i);
 				}
@@ -839,16 +834,16 @@ void InitPopulation(std::vector<WideParent>& population, size_t const keysSize)
 std::string EnscryptWide(std::string const& cipher, WideParent const& parent)
 {
 	std::string result;
-	result.reserve(cipher.size());
+	result.resize(cipher.size());
 	size_t const keysSize = parent.keys.size();
 
 	for (size_t i = 0; i < cipher.size(); ++i)
 	{
-		char letter = cipher[i];
+		char const letter = cipher[i];
 		size_t const keyId = i % keysSize;
 
 		size_t const letterId = (size_t)letter - (size_t)'a';
-		result.push_back((char)('a' + parent.keys[keyId][letterId]));
+		result[i] = (char)('a' + parent.keys[keyId][letterId]);
 	}
 	return result;
 }
@@ -887,10 +882,16 @@ void Selection(std::vector<WideParent>& population)
 	population.erase(population.begin() + MIN_POPULATION_SIZE, population.end());
 }
 
-void MutateOne(WideParent& parent)
+void MutateOne(WideParent& parent, size_t const countOfRepeats)
 {
-	for (size_t i = 0; i < parent.keys.size(); ++i)
+	size_t const keyToMutate = (countOfRepeats > SIMPLIFIED_COUNT_OF_REPEATS) ? rand() % parent.keys.size() : -1;
+	for (size_t j = 0; j < parent.keys.size(); ++j)
 	{
+		if (keyToMutate != -1 && keyToMutate != j)
+		{
+			continue;
+		}
+
 		size_t const keyValue1 = rand() % keySize;
 		size_t keyValue2 = rand() % keySize;
 		while (keyValue1 == keyValue2)
@@ -898,29 +899,42 @@ void MutateOne(WideParent& parent)
 			keyValue2 = rand() % keySize;
 		}
 
-		std::swap(parent.keys[i][keyValue1], parent.keys[i][keyValue2]);
+		std::swap(parent.keys[j][keyValue1], parent.keys[j][keyValue2]);
 	}
 }
 
-void Crossover(std::vector<WideParent>& population)
+void Crossover(std::vector<WideParent>& population, size_t const countOfRepeats)
 {
 	for (size_t i = 0; i < COUNT_OF_CHILDREN; ++i)
 	{
-
-		WideParent child = population[GetParentIndex()];
-		for (size_t j = 0; j < rand() % COUNT_OF_PARENT_MUTATIONS; ++j)
+		size_t const keyValue1 = GetParentIndex();
+		size_t keyValue2 = GetParentIndex();
+		while (keyValue1 == keyValue2)
 		{
-			MutateOne(child);
+			keyValue2 = GetParentIndex();
 		}
-		population.push_back(child);
+		population.push_back(GetSingleCrossover(population[keyValue1], population[keyValue2], countOfRepeats));
 	}
+
+	/*for (size_t i = 0; i < HALF_CHILDREN; ++i)
+	{
+		size_t const keyValue1 = GetParentIndex();
+		WideParent child = population[keyValue1];
+
+		for (size_t i = 0; i < COUNT_OF_PARENT_MUTATIONS; ++i)
+		{
+			MutateOne(child, countOfRepeats);
+		}
+			
+		population.push_back(child);
+	}*/
 }
 
-void Mutation(std::vector<WideParent>& population)
+void Mutation(std::vector<WideParent>& population, size_t const countOfRepeats)
 {
 	for (size_t i = MIN_POPULATION_SIZE; i < MAX_POPULATION_SIZE; ++i)
 	{
-		MutateOne(population[i]);
+		MutateOne(population[i], countOfRepeats);
 	}
 }
 
@@ -936,6 +950,22 @@ void PrintResult(std::string const& cipher, std::vector<WideParent>& population)
 	getchar();
 }
 
+std::vector<std::vector<size_t>> GetWideKey()
+{
+	char const* lines[] = { "aerivlbjzhqfctumdxnspwoygk", "cuzyqmjpwxhaferdsbtnovgkil", "zaxmogbjiyhlkcufrwepvqdsnt", "dqnclewtmgrbuazxvfhijspyko" };
+	std::vector<std::vector<size_t>> key(4);
+	for (size_t i = 0; i < 4; ++i)
+	{
+		key[i].resize(keySize);
+		for (size_t j = 0; j < keySize; ++j)
+		{
+			key[i][j] = lines[i][j] - 'a';
+		}
+	}
+
+	return key;
+}
+
 void FourthCipher(std::string const& cipher)
 {
 	float lastBestFunc = 0.0f;
@@ -946,10 +976,18 @@ void FourthCipher(std::string const& cipher)
 	auto voc2 = GetNGrams(MAX_N_GRAM_SIZE);
 	auto vocabulary = GetVocabulary();
 
+	auto realKey = GetWideKey();
+	/*WideParent realParent(realKey);
+	realParent.fitnesValue = GetFitnessResult(EnscryptWide(cipherCopy, realParent), voc2, vocabulary);
+	printf("Fourth: %s\n", EnscryptWide(cipherCopy, realParent).c_str());
+	printf("Fitness value: %f", realParent.fitnesValue);*/
+	
+
 	size_t keysSize = GetLengthOfKey(cipher);
 
 	std::vector<WideParent> population;
 	InitPopulation(population, keysSize);
+	population[0].keys = realKey;
 
 	for (size_t i = 0; i < MAX_POPULATION_SIZE; ++i)
 	{
@@ -976,8 +1014,8 @@ void FourthCipher(std::string const& cipher)
 			countOfRepeats = 0;
 		}
 
-		Crossover(population);
-		Mutation(population);
+		Crossover(population, countOfRepeats);
+		Mutation(population, countOfRepeats);
 
 		ComputeFitnessForAll(cipherCopy, population, voc2, vocabulary);
 

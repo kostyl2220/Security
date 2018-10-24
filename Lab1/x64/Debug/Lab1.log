@@ -1,0 +1,23 @@
+﻿  Source.cpp
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(201): warning C4244: 'argument': conversion from '__int64' to 'const char', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(209): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(209): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(348): warning C4552: '/': result of expression not used
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(329): warning C4101: 'str': unreferenced local variable
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(487): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(540): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(540): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(541): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(541): warning C4244: 'initializing': conversion from 'float' to 'const size_t', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(610): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(610): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(610): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(610): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(1021): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(1013): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(1013): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(1013): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'size_t'
+  c:\users\kosty\source\repos\lab1\lab1\source.cpp(1013): note: consider using '%zd' in the format string
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(1041): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\kosty\source\repos\lab1\lab1\source.cpp(1042): warning C4129: 'A': unrecognized character escape sequence
+  Lab1.vcxproj -> C:\Users\kosty\source\repos\Lab1\x64\Debug\Lab1.exe
